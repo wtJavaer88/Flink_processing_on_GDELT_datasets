@@ -35,4 +35,66 @@ Here is an extract from the dataset of 2015:
 "1074012","2404","0","STOLEN VEHICLE","10851(A)VC TAKE VEH W/O OWNER","6","6C","1113","01/01/2015","00:13:00"
 ```
 
+## Batch Examples
+
+We start by using some batch examples in order to understand the dataset and the basic concepts of Apache Flink. These examples are based on the [Apache Flink Use Case - Crima Data Analysis Part I](http://data-flair.training/blogs/apache-flink-use-case-crime-data-analysis/)
+and [Apache Flink Use Case - Crima Data Analysis Part II](http://data-flair.training/blogs/apache-flink-real-world-use-case-crime-data-analysis-2/) available at [Data Flair](http://data-flair.training/blogs/).
+
+### Analysis by District
+
+We start by analyzing the input file based on the district where the crimes are reported.
+For this example we use the [CrimeDistrict class](src/main/java/it.uniroma1.dis.bdc/batch/CrimeDistrict.java).
+
+1. Make sure that the Apache Flink engine is up and running
+```
+(flink-1.2.0 installation directory)/bin/start-local.sh
+Starting jobmanager daemon on host red.
+```
+2. Download the [2015 dataset](http://bit.ly/1WOB0Ih) and make it available under /tmp/crime.csv
+3. Use maven to package the jar file
+```
+mvn package
+```
+4. Submit the batch job to flink
+```
+(flink-1.2.0 installation directory)/bin/flink run -c it.uniroma1.dis.bdc.batch.CrimeDistrict ./target/data-crime-0.1.jar --filename /tmp/crime.csv
+```
+
+The output produced should look like:
+```
+Cluster configuration: Standalone cluster with JobManager at localhost/127.0.0.1:6123
+Using address localhost:6123 to connect to JobManager.
+JobManager web interface address http://localhost:8081
+Starting execution of program
+Submitting job with JobID: 1647cf244fbb8bd48a7b578ae7d05eb0. Waiting for job completion.
+Connected to JobManager at Actor[akka.tcp://flink@localhost:6123/user/jobmanager#300159966]
+04/19/2017 12:10:14	Job execution switched to status RUNNING.
+04/19/2017 12:10:14	CHAIN DataSource (at main(CrimeDistrict.java:53) (org.apache.flink.api.java.io.TupleCsvInputFormat)) -> FlatMap (FlatMap at main(CrimeDistrict.java:57)) -> Combine(SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to SCHEDULED
+04/19/2017 12:10:14	CHAIN DataSource (at main(CrimeDistrict.java:53) (org.apache.flink.api.java.io.TupleCsvInputFormat)) -> FlatMap (FlatMap at main(CrimeDistrict.java:57)) -> Combine(SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to DEPLOYING
+04/19/2017 12:10:14	CHAIN DataSource (at main(CrimeDistrict.java:53) (org.apache.flink.api.java.io.TupleCsvInputFormat)) -> FlatMap (FlatMap at main(CrimeDistrict.java:57)) -> Combine(SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to RUNNING
+04/19/2017 12:10:14	Reduce (SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to SCHEDULED
+04/19/2017 12:10:14	Reduce (SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to DEPLOYING
+04/19/2017 12:10:14	CHAIN DataSource (at main(CrimeDistrict.java:53) (org.apache.flink.api.java.io.TupleCsvInputFormat)) -> FlatMap (FlatMap at main(CrimeDistrict.java:57)) -> Combine(SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to FINISHED
+04/19/2017 12:10:14	Reduce (SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to RUNNING
+04/19/2017 12:10:14	DataSink (collect())(1/1) switched to SCHEDULED
+04/19/2017 12:10:14	DataSink (collect())(1/1) switched to DEPLOYING
+04/19/2017 12:10:14	DataSink (collect())(1/1) switched to RUNNING
+04/19/2017 12:10:14	Reduce (SUM(1), at main(CrimeDistrict.java:59)(1/1) switched to FINISHED
+04/19/2017 12:10:14	DataSink (collect())(1/1) switched to FINISHED
+04/19/2017 12:10:14	Job execution switched to status FINISHED.
+(,9)
+(1,5607)
+(2,7754)
+(3,6926)
+(4,5463)
+(5,5259)
+(6,8757)
+(UI,445)
+Program execution finished
+Job with JobID 1647cf244fbb8bd48a7b578ae7d05eb0 has finished.
+Job Runtime: 953 ms
+Accumulator Results:
+- d35de0db30bfd74cb9316104645b7f32 (java.util.ArrayList) [8 elements]
+```
+
 

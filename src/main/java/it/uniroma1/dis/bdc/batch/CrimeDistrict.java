@@ -1,4 +1,4 @@
-package it.uniroma1.dis.batch;
+package it.uniroma1.dis.bdc.batch;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.DataSet;

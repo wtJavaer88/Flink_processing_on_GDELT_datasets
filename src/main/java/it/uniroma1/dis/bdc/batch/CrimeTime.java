@@ -1,4 +1,4 @@
-package it.sapienza.dis.batch;
+package it.uniroma1.dis.bdc.batch;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.operators.Order;

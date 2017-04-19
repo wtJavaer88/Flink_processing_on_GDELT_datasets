@@ -20,7 +20,7 @@ under the License.
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>it.sapienza.dis.bd</groupId>
+    <groupId>it.uniroma1.dis.bd</groupId>
     <version>0.1</version>
     <artifactId>data-crime</artifactId>
     <name>data-crime</name>
@@ -41,7 +41,7 @@ under the License.
     <packaging>jar</packaging>
 
     <properties>
-        <start-class>it.sapienza.dis.batch.CrimeType</start-class>
+        <start-class>it.uniroma1.dis.bdc.batch.CrimeType</start-class>
         <flink.version>1.2.0</flink.version>
     </properties>
 
