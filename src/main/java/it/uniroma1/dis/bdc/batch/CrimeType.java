@@ -10,7 +10,7 @@ import org.apache.flink.util.Collector;
 
 /**
  * A simple example of Apache Flink batch processing engine using the Sacramento Police Department open dataset.
- * We here count the occurrences of group(crimedescr, ucr_ncic_code) as same code is assigned to more than one crime.
+ * We here count the occurrences based on the offense code assigned to more than one crime.
  *
  * @author ichatz@gmail.com
  */

@@ -1,19 +1,20 @@
 package it.uniroma1.dis.bdc.batch;
 
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple1;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
- * find out Distribution of number of crimes happened per day and sort them in descending order for each month.
+ * A simple example of Apache Flink batch processing engine using the Sacramento Police Department open dataset.
+ * find out Distribution of number of crimes happened per day.
+ *
+ * @author ichatz@gmail.com
  */
 public class CrimeTime {
 
@@ -32,14 +33,14 @@ public class CrimeTime {
             final ParameterTool params = ParameterTool.fromArgs(args);
             if (!params.has("filename")) {
                 filename = "/tmp/crime.csv";
-                System.err.println("No filename specified. Please run 'CrimeDistrict " +
+                System.err.println("No filename specified. Please run 'CrimeTime " +
                         "--filename <filename>, where filename is the name of the dataset in CSV format");
             } else {
                 filename = params.get("filename");
             }
 
         } catch (Exception ex) {
-            System.err.println("No filename specified. Please run 'CrimeDistrict " +
+            System.err.println("No filename specified. Please run 'CrimeTime " +
                     "--filename <filename>, where filename is the name of the dataset in CSV format");
             return;
         }
@@ -50,43 +51,26 @@ public class CrimeTime {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         // create a dataset based on the csv file
-        final DataSet< Tuple1 < String >> rawdata = env.readCsvFile(filename)
-                .includeFields("1000000")
+        final DataSet<Tuple2<Date, Integer>> rawdata = env.readCsvFile(filename)
+                .includeFields("000000001")
                 .ignoreFirstLine()
                 .parseQuotedStrings('"')
-                .types(String.class);
+                .types(String.class)
+                .map(new MapFunction<Tuple1<String>, Tuple2<Date, Integer>>() {
 
-        rawdata.map(new DateExtractor()) //map data according to MM/dd/YYYY
+                         public Tuple2<Date, Integer> map(Tuple1<String> value) throws Exception {
+                             final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
-                .groupBy(0) //group according to date
-                .sum(2)  //sum the count on the field 2
-                .groupBy(1)//  group the data according to field 1 that is month/year
+                             return new Tuple2<Date, Integer>(formatter.parse(value.f0), 1);
+                         }
+                     }
+                );
 
-                .sortGroup(2, Order.DESCENDING).first(50) //  arrange the data in decreasing  order
+        // count events based on day/month
+        rawdata.groupBy(0) //group according to date
+                .sum(1)  //sum the count
+                .print();
 
-                .writeAsCsv("/home/ichatz/Downloads/CrimeTime.csv");
-
-        env.execute();
-
-    }
-
-    private final static class DateExtractor
-            implements MapFunction< Tuple1 < String > , Tuple3 < String, String, Integer >> {
-
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
-        SimpleDateFormat formatter2 = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-
-        public Tuple3< String, String, Integer > map(Tuple1< String > time) throws Exception {
-
-            Date date = formatter2.parse(time.f0);
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            int month = cal.get(Calendar.MONTH) + 1;
-            int year = cal.get(Calendar.YEAR);
-
-            return new Tuple3 <String, String, Integer > (formatter.format(date), "" + month + "/" + year, 1);
-        }
     }
 
 }

@@ -1,6 +1,4 @@
-# bdc2017-flink-streaming
-
-This repository includes a collection of examples for batch & stream processing of big data sets using [Apache Flink](https://flink.apache.org/). These examples have been used as part of the course [Big data computing](https://piazza.com/uniroma1.it/spring2017/1044406/home) at the [Department of Computer, Control and Management Engineering](http://www.dis.uniroma1.it/en) of the [Sapienza University of Rome](http://en.uniroma1.it/).
+This repository includes a collection of examples for batch & stream processing of big data sets using Java and [Apache Flink](https://flink.apache.org/). These examples have been used as part of the course [Big data computing](https://piazza.com/uniroma1.it/spring2017/1044406/home) at the [Department of Computer, Control and Management Engineering](http://www.dis.uniroma1.it/en) of the [Sapienza University of Rome](http://en.uniroma1.it/).
 
 The Apache Flink website provides a detailed [Setup and Quickstart guide](https://ci.apache.org/projects/flink/flink-docs-release-1.2/quickstart/setup_quickstart.html) as well as [examples](https://ci.apache.org/projects/flink/flink-docs-release-1.2/examples/) to get a better feel for Flink’s programming APIs. The examples related to the streaming engine of Flink are available at the [apache flink git hub repository](https://github.com/apache/flink/tree/master/flink-examples/flink-examples-streaming/src/main/java/org/apache/flink/streaming/examples). The Apache Flink website also includes a ver nice [guide for the streaming engine](https://ci.apache.org/projects/flink/flink-docs-release-1.2/dev/datastream_api.html).
 
@@ -104,5 +102,33 @@ Accumulator Results:
 ```
 
 Note that in the above execution there are 9 rows with a missing district ID and 445 records with a wrong district ID.
+
+
+### Analysis by Offense type
+
+The next example follows a different approach. In the previous case we defined a class that maps the input into tuples and then
+the reduce step was based on Flink functions **groupBy** and **sum**. In this example we use Flink functions in order to
+transform the input into tuples and define a custom class that is used to implement the reduce step.
+
+Clearly the two examples are almost identical. However it is interesting to examine the flexibility offered by Flink.
+
+The [CrimeType class](src/main/java/it/uniroma1/dis/bdc/batch/CrimeType.java) uses the 2nd column that contains the offense type.
+
+The execution of this example is similar to the previous one.
+
+
+### Analysis by Date
+
+The third example is provided by the [CrimeTime class](src/main/java/it/uniroma1/dis/bdc/batch/CrimeTime.java)
+that uses date transformation in order to process the data set based on the date of the crime.
+Notice the inline definition of the MapFunction.
+
+
+### Analysis by Date and Hour
+
+The final example is implemented in the [CrimeMaxHour class](src/main/java/it/uniroma1/dis/bdc/batch/CrimeMaxHour.java).
+For each day, it identifies the hour when the most crimes occured.
+Notice the use of the groupBy() functions in order to compute the count for each day/hour and then select the row with the maximum value.
+
 
 
