@@ -10,16 +10,19 @@ import org.apache.flink.util.Collector;
 
 /**
  * A simple example of Apache Flink batch processing engine using the Sacramento Police Department open dataset.
+ * We here count the number of occurrences per city district.
+ *
  * @author ichatz@gmail.com
  */
-public class CrimeDistrict {
+public final class CrimeDistrict {
 
     /**
      * Main entry point for command line execution.
+     *
      * @param args the arguments as received from the command link. They are used to extract the filename of the dataset.
      * @throws Exception exceptions generated during the execution of the apache flink engine.
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
 
         // the filename to use as input dataset
         final String filename;
@@ -27,7 +30,7 @@ public class CrimeDistrict {
             // access the arguments of the command line tool
             final ParameterTool params = ParameterTool.fromArgs(args);
             if (!params.has("filename")) {
-                filename = "/tmp/crimetime.csv";
+                filename = "/tmp/crime.csv";
                 System.err.println("No filename specified. Please run 'CrimeDistrict " +
                         "--filename <filename>, where filename is the name of the dataset in CSV format");
             } else {
@@ -64,15 +67,17 @@ public class CrimeDistrict {
     /**
      * Simple class to translate the input line (from the crime data set) into tuples (district-id, 1).
      */
-    public static class Counter implements FlatMapFunction<Tuple1<String>, Tuple2<String, Integer>> {
+    private final static class Counter
+            implements FlatMapFunction<Tuple1<String>, Tuple2<String, Integer>> {
 
         /**
          * Main method used by the apache flink flatMap method.
+         *
          * @param value - the one-value Tuple (district-id) as read from the csv file.
-         * @param out - the two-value tuple (district-id, 1).
+         * @param out   - the two-value tuple (district-id, 1).
          */
         public void flatMap(final Tuple1<String> value, final Collector<Tuple2<String, Integer>> out) {
-            out.collect(new Tuple2<String, Integer>((String) value.getField(0), 1));
+            out.collect(new Tuple2<String, Integer>(value.f0, 1));
         }
     }
 

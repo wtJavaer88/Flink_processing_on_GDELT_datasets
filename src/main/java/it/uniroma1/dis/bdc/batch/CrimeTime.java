@@ -6,6 +6,7 @@ import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.utils.ParameterTool;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,12 +17,43 @@ import java.util.Date;
  */
 public class CrimeTime {
 
-    public static void main(String[] args) throws Exception {
+    /**
+     * Main entry point for command line execution.
+     *
+     * @param args the arguments as received from the command link. They are used to extract the filename of the dataset.
+     * @throws Exception exceptions generated during the execution of the apache flink engine.
+     */
+    public static void main(final String[] args) throws Exception {
 
-        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        // the filename to use as input dataset
+        final String filename;
+        try {
+            // access the arguments of the command line tool
+            final ParameterTool params = ParameterTool.fromArgs(args);
+            if (!params.has("filename")) {
+                filename = "/tmp/crime.csv";
+                System.err.println("No filename specified. Please run 'CrimeDistrict " +
+                        "--filename <filename>, where filename is the name of the dataset in CSV format");
+            } else {
+                filename = params.get("filename");
+            }
 
-        DataSet< Tuple1 < String >> rawdata = env.readCsvFile("crimetime.csv")
-                .includeFields("1000000").ignoreFirstLine()
+        } catch (Exception ex) {
+            System.err.println("No filename specified. Please run 'CrimeDistrict " +
+                    "--filename <filename>, where filename is the name of the dataset in CSV format");
+            return;
+        }
+
+        // The ExecutionEnvironment is the context in which a program is executed.
+        // A local environment will cause execution in the current JVM,
+        // a remote environment will cause execution on a remote cluster installation.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        // create a dataset based on the csv file
+        final DataSet< Tuple1 < String >> rawdata = env.readCsvFile(filename)
+                .includeFields("1000000")
+                .ignoreFirstLine()
+                .parseQuotedStrings('"')
                 .types(String.class);
 
         rawdata.map(new DateExtractor()) //map data according to MM/dd/YYYY
@@ -38,7 +70,8 @@ public class CrimeTime {
 
     }
 
-    public static class DateExtractor implements MapFunction< Tuple1 < String > , Tuple3 < String, String, Integer >> {
+    private final static class DateExtractor
+            implements MapFunction< Tuple1 < String > , Tuple3 < String, String, Integer >> {
 
         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         SimpleDateFormat formatter2 = new SimpleDateFormat("MM/dd/yyyy HH:mm");

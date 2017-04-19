@@ -43,7 +43,13 @@ and [Apache Flink Use Case - Crima Data Analysis Part II](http://data-flair.trai
 ### Analysis by District
 
 We start by analyzing the input file based on the district where the crimes are reported.
-For this example we use the [CrimeDistrict class](src/main/java/it.uniroma1.dis.bdc/batch/CrimeDistrict.java).
+For this example we use the [CrimeDistrict class](src/main/java/it/uniroma1/dis/bdc/batch/CrimeDistrict.java).
+
+In this example we use the 6th column of the data set and count the number of crimes reported for each district.
+We use a FlatMap to construct the two-valued tuples (district-id, 1) and in the sequel we request from Flink to
+group the tuples based on the 1st value and sum the 2nd values.
+
+The execution of this example is done as follows:
 
 1. Make sure that the Apache Flink engine is up and running
 ```
@@ -96,5 +102,7 @@ Job Runtime: 953 ms
 Accumulator Results:
 - d35de0db30bfd74cb9316104645b7f32 (java.util.ArrayList) [8 elements]
 ```
+
+Note that in the above execution there are 9 rows with a missing district ID and 445 records with a wrong district ID.
 
 
