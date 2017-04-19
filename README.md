@@ -131,4 +131,58 @@ For each day, it identifies the hour when the most crimes occured.
 Notice the use of the groupBy() functions in order to compute the count for each day/hour and then select the row with the maximum value.
 
 
+## Streaming Examples
+
+Given our familiarization with some basic notions of Apache Flink we now proceed by looking into the streaming aspects of the framewokr.
+
+### Simple Socket Server
+
+The [DataSetServer class](src/main/java/it/uniroma1/dis/bdc/stream/DataSetServer.java) provides a very naive socket server
+for replaying the data included in the csv file. The socket supports only 1 connections and will introduce a delay between transmitting consecutive lines.
+In particular based on the occurrence time, there will be a delay proporsional to the actual minutes of the hour that the crime occurred.
+
+### Streaming Count of District
+
+We repeat the analysis of the crimes based on the district in this streaming mode.
+We now wish to count the number of crimes reported based on the time arrived from the server in windows of 5 minutes.
+
+For this example we use the [CrimeDistrict class](src/main/java/it/uniroma1/dis/bdc/stream/CrimeDistrict.java) located in the stream package.
+
+The execution of this example is done as follows:
+
+1. Make sure that the Apache Flink engine is up and running
+```
+(flink-1.2.0 installation directory)/bin/start-local.sh
+Starting jobmanager daemon on host red.
+```
+2. Download the [2015 dataset](http://bit.ly/1WOB0Ih) and make it available under /tmp/crime.csv
+3. Use maven to package the jar file
+```
+mvn package
+```
+4. Start the socket server
+```
+java -cp ./target/data-crime-0.1.jar it.uniroma1.dis.bdc.stream.DataSetServer ~/tmp/crime.csv
+```
+5. Submit the streaming job to flink
+```
+(flink-1.2.0 installation directory)/bin/flink run -c it.uniroma1.dis.bdc.stream.CrimeDistrict ./target/data-crime-0.1.jar
+```
+
+As the values arrive to Flink via the socket, they are processed and the output is written to the log file located under the flink/log directory.
+It will look like this:
+```
+tail -f (flink-1.2.0 installation directory)/log/flink-ichatz-jobmanager-0-red.out
+(2,2)
+(5,3)
+(3,5)
+(4,3)
+(6,5)
+(1,1)
+(4,8)
+(6,6)
+(2,2)
+(5,2)
+(1,6)
+```
 
