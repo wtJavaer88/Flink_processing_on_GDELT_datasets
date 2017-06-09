@@ -22,6 +22,18 @@ under the License.
 
     <groupId>it.uniroma1.dis.bd</groupId>
     <version>0.1</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <artifactId>data-crime</artifactId>
     <name>data-crime</name>
     <description>Data science examples for stream processing using Apache Flink</description>
