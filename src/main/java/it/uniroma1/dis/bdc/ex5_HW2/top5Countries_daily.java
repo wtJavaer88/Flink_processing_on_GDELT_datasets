@@ -81,7 +81,8 @@ public class top5Countries_daily {
                                 return top5;
                             }
                         }
-                    }).print();
+                    }).writeAsText("./output/top5Countries_daily");
+                    //.print();
 
 
             env.execute();

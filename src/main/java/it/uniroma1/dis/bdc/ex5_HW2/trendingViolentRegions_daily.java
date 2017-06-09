@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -82,7 +83,8 @@ public class trendingViolentRegions_daily {
                             }
                         });
 
-                        out.print();
+                        out.writeAsText("./output/trendingViolentRegions_daily", FileSystem.WriteMode.OVERWRITE);
+        //.print();
 
 
         env.execute();

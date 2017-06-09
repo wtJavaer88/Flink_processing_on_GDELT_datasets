@@ -4,6 +4,7 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -61,7 +62,8 @@ public class Protests_weekly {
                                 collector.collect(new Tuple2<>(String.valueOf(week) ,count));
                             }
                         });
-        grouped.print();
+        grouped.writeAsText("./output/Protests_weekly", FileSystem.WriteMode.OVERWRITE);
+                //.print();
 
         env.execute();
     }

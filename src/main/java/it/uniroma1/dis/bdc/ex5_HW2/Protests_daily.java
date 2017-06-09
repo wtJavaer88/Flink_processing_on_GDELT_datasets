@@ -49,7 +49,8 @@ public class Protests_daily {
                     .sum(2)
                     .map(new toDayANDCount());
 
-            grouped.print();
+            grouped.writeAsText("./output/Protests_daily");
+                    //.print();
 
             env.execute();
          }

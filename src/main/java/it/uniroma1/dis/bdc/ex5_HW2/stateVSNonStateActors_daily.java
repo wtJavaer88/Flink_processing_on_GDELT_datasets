@@ -3,6 +3,7 @@ package it.uniroma1.dis.bdc.ex5_HW2;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -48,7 +49,7 @@ public class stateVSNonStateActors_daily {
                         .window(TumblingEventTimeWindows.of(Time.days(1L)))
                         .sum(2);
 
-        grouped.print();
+
 
 
         grouped
@@ -61,8 +62,8 @@ public class stateVSNonStateActors_daily {
                         cur.add(value);
                         return cur;
                     }
-                })
-                .print();
+                }).writeAsText("./output/stateVSNonStateActors_daily", FileSystem.WriteMode.OVERWRITE);
+                //.print();
 
 
         env.execute();

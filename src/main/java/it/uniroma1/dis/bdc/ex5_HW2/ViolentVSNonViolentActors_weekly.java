@@ -4,6 +4,7 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -87,8 +88,8 @@ public class ViolentVSNonViolentActors_weekly {
                         cur.add(tuple);
                         return cur;
                     }
-                })
-                .print();
+                }).writeAsText("./output/ViolentVSNonViolentActors_weekly", FileSystem.WriteMode.OVERWRITE);
+                //.print();
 
 
         env.execute();

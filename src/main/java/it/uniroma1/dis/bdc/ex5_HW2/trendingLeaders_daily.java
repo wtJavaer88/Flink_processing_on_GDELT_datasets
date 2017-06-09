@@ -2,6 +2,7 @@ package it.uniroma1.dis.bdc.ex5_HW2;
 
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -76,7 +77,8 @@ public class trendingLeaders_daily {
                                 return top5;
                             }
                         }
-                        }).print();
+                        }).writeAsText("./output/trendingLeaders_daily", FileSystem.WriteMode.OVERWRITE);
+        //.print();
 
         env.execute();
     }

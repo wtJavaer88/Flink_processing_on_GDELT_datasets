@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -69,7 +70,8 @@ public class Violent_weekly {
                                 collector.collect(new Tuple3<>(String.valueOf(week),event,count ));
                             }
                         });
-        grouped.print();
+        grouped.writeAsText("./output/Violent_weekly", FileSystem.WriteMode.OVERWRITE);
+        //.print();
 
 
 
